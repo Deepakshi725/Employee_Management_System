@@ -13,11 +13,15 @@ const loadEnv = async () => {
 let connected = async () => {
   await loadEnv();
   try {
-    console.log(process.env.database_URI);
+    console.log("Attempting to connect to database...");
+    if (!process.env.database_URI) {
+      throw new Error("Database URI is not defined in environment variables");
+    }
     await mongoose.connect(process.env.database_URI);
     console.log("Database connected successfully");
   } catch (error) {
-    console.log(error);
+    console.error("Database connection error:", error);
+    throw error; // Re-throw the error to be handled by the server
   }
 };
 const isConnected = () => {

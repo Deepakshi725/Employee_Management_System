@@ -7,7 +7,7 @@ import UserFilters from "@/components/users/UserFilters";
 import { useAuth } from "@/context/AuthContext";
 import { User, UserRole } from "@/lib/types";
 
-const API_BASE_URL = "http://localhost:5000/api"; // Updated backend API base URL
+const API_BASE_URL = "https://employee-management-system-3xbw.onrender.com/api"; // Updated backend API base URL
 
 const UsersPage: React.FC = () => {
   const { state } = useAuth();
