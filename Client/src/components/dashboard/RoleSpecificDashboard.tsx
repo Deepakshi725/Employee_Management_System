@@ -10,7 +10,7 @@ interface RoleSpecificDashboardProps {
   role: UserRole;
 }
 
-const API_BASE_URL = "http://localhost:5000/api"; // Updated API base URL with /api prefix
+const API_BASE_URL = "https://employee-management-system-3xbw.onrender.com/api"; // Updated API base URL with /api prefix
 
 const RoleSpecificDashboard: React.FC<RoleSpecificDashboardProps> = ({ role }) => {
   const { state } = useAuth();

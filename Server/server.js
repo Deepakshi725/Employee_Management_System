@@ -12,7 +12,7 @@ dotenv.config();
 
 // Configure CORS
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://192.168.31.178:8080'], // Add your frontend URLs
+  origin: '*', // Allow all origins during development
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

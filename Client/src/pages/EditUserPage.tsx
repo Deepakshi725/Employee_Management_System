@@ -6,7 +6,7 @@ import { User } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-const API_BASE_URL = "http://localhost:5000/api"; // Updated backend API base URL
+const API_BASE_URL = "https://employee-management-system-3xbw.onrender.com/api"; // Updated backend API base URL
 
 const EditUserPage: React.FC = () => {
   const navigate = useNavigate();

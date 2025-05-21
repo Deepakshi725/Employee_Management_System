@@ -37,7 +37,7 @@ interface UserTableProps {
   onUserDeleted: () => void;
 }
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://employee-management-system-3xbw.onrender.com/api";
 
 const UserTable: React.FC<UserTableProps> = ({ users, filteredRole, onUserDeleted }) => {
   const { state, canPerformUserAction } = useAuth();
