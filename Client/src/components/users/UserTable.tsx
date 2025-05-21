@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { User, UserRole } from "@/lib/types";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, AuthContextProps } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   ChevronDown,
@@ -40,7 +40,7 @@ interface UserTableProps {
 const API_BASE_URL = "http://localhost:5000/api";
 
 const UserTable: React.FC<UserTableProps> = ({ users, filteredRole, onUserDeleted }) => {
-  const { state, canManageRole } = useAuth();
+  const { state, canPerformUserAction } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -152,13 +152,14 @@ const UserTable: React.FC<UserTableProps> = ({ users, filteredRole, onUserDelete
               <TableHead>Position</TableHead>
               <TableHead>Manager/TL</TableHead>
               <TableHead>Joined</TableHead>
+              <TableHead>Phone Number</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {displayedUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
+                <TableCell colSpan={8} className="text-center py-8">
                   No users found
                 </TableCell>
               </TableRow>
@@ -194,10 +195,12 @@ const UserTable: React.FC<UserTableProps> = ({ users, filteredRole, onUserDelete
                       ? new Date(user.createdAt).toLocaleDateString()
                       : "-"}
                   </TableCell>
+                  <TableCell>{user.phoneNum || '-'}</TableCell>
                   <TableCell className="text-right">
                     {state.user?.id !== user.id &&
-                      state.user?.role &&
-                      canManageRole(state.user.role, user.role) && (
+                      state.user?.role && (
+                      (canPerformUserAction('edit', user) || canPerformUserAction('delete', user))
+                      ) && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" disabled={isDeleting}>
@@ -215,7 +218,7 @@ const UserTable: React.FC<UserTableProps> = ({ users, filteredRole, onUserDelete
                             <DropdownMenuItem
                               onClick={() => confirmDeleteUser(user)}
                               className="text-destructive focus:text-destructive"
-                              disabled={isDeleting}
+                              disabled={isDeleting || !canPerformUserAction('delete', user)}
                             >
                               {isDeleting && userToDelete?.id === user.id ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -228,8 +228,12 @@ router.post("/SignUp", async (req, res) => {
         return res.status(404).json({ message: "User to update not found" });
       }
 
-      // Check if user has permission to update this user, unless they are updating their own profile
-      if (currentUser._id.toString() !== req.params.id && !canManageRole(currentUser.role, userToUpdate.role)) {
+      // Allow update if: user is updating their own profile OR (user has permission based on role hierarchy OR user is a manager/TL of the user to update)
+      if (currentUser._id.toString() !== req.params.id &&
+          !canManageRole(currentUser.role, userToUpdate.role) &&
+          !((currentUser.role === 'manager' || currentUser.role === 'admin' || currentUser.role === 'master') && userToUpdate.managerId && userToUpdate.managerId.equals(currentUser._id)) && // Check if current user is the manager
+          !((currentUser.role === 'tl' || currentUser.role === 'manager' || currentUser.role === 'admin' || currentUser.role === 'master') && userToUpdate.tlId && userToUpdate.tlId.equals(currentUser._id))
+         ) {
         return res.status(403).json({ message: "You don't have permission to update this user" });
       }
 
@@ -287,8 +291,11 @@ router.post("/SignUp", async (req, res) => {
         return res.status(404).json({ message: "User to delete not found" });
       }
 
-      // Check if user has permission to delete this user
-      if (!canManageRole(currentUser.role, userToDelete.role)) {
+      // Allow deletion if: user has permission based on role hierarchy OR user is a manager/TL of the user to delete
+      if (!canManageRole(currentUser.role, userToDelete.role) &&
+          !((currentUser.role === 'manager' || currentUser.role === 'admin' || currentUser.role === 'master') && userToDelete.managerId && userToDelete.managerId.equals(currentUser._id)) && // Check if current user is the manager
+          !((currentUser.role === 'tl' || currentUser.role === 'manager' || currentUser.role === 'admin' || currentUser.role === 'master') && userToDelete.tlId && userToDelete.tlId.equals(currentUser._id))
+         ) {
         return res.status(403).json({ message: "You don't have permission to delete this user" });
       }
 
@@ -448,7 +455,7 @@ router.get("/users/:id", auth, async (req, res) => {
       console.log("User not found for ID:", req.params.id);
       return res.status(404).json({ message: "User not found" });
     }
-    console.log("User found:", user);
+    console.log("User found for /users/:id:", user);
     res.json({ user });
   } catch (error) {
     console.error("Fetch user by ID error:", error);

@@ -70,8 +70,8 @@ const EditUserPage: React.FC = () => {
           name: `${userData.user.firstName} ${userData.user.lastName}`.trim(),
           email: userData.user.email,
           role: userData.user.role,
-          managerId: userData.user.managerId,
-          tlId: userData.user.tlId,
+          managerId: userData.user.managerId ? userData.user.managerId.toString() : "", // Convert ObjectId to string, handle null/undefined
+          tlId: userData.user.tlId ? userData.user.tlId.toString() : "", // Convert ObjectId to string, handle null/undefined
           avatar: userData.user.avatar, // Assuming avatar is returned by backend
           department: userData.user.department,
           position: userData.user.position,
@@ -79,6 +79,7 @@ const EditUserPage: React.FC = () => {
           createdAt: userData.user.createdAt,
           firstName: userData.user.firstName,
           lastName: userData.user.lastName,
+          phoneNum: userData.user.phoneNum, // Include phoneNum in the mapping
         };
         
         setUser(fetchedUser);
@@ -92,6 +93,12 @@ const EditUserPage: React.FC = () => {
           tlId: user.tlId,
           // Include other necessary fields from backend
         }));
+
+        // Convert managerId and tlId to strings in all users list for consistent comparison in form selects
+        allUsers.forEach(u => {
+           if (u.managerId) u.managerId = u.managerId.toString();
+           if (u.tlId) u.tlId = u.tlId.toString();
+        });
 
         setManagers(allUsers.filter(user => user.role === 'manager'));
         setTeamLeaders(allUsers.filter(user => user.role === 'tl'));

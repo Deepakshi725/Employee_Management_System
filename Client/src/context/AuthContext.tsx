@@ -64,7 +64,7 @@ interface AuthContextProps {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
-  canManageRole: (role: UserRole) => boolean;
+  canPerformUserAction: (action: 'create' | 'edit' | 'delete', targetUser?: User) => boolean;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -72,7 +72,7 @@ export const AuthContext = createContext<AuthContextProps>({
   login: async () => {},
   logout: () => {},
   updateUser: async () => {},
-  canManageRole: () => false,
+  canPerformUserAction: () => false,
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -303,8 +303,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
      // or you can add a success action type to set isLoading to false.
   };
 
-  // Helper to check if current user can manage a specific role
-  const canManageRole = (role: UserRole): boolean => {
+  // Helper to check if current user can manage a specific role or perform action on a user
+  const canPerformUserAction = (action: 'create' | 'edit' | 'delete', targetUser?: User): boolean => {
     if (!state.user) return false;
 
     const roleHierarchy: Record<UserRole, number> = {
@@ -316,20 +316,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     const userRoleLevel = roleHierarchy[state.user.role];
-    const targetRoleLevel = roleHierarchy[role];
 
-    // Master can manage any role except potentially another master (handled by UI logic)
+    // Master role has full permissions for now
     if (state.user.role === 'master') {
-      return true; // Master can manage any role below them
+      return true;
     }
 
-    // For other roles, use the strict hierarchy check
-    return userRoleLevel > targetRoleLevel;
+    // For 'create' action, check if user can create the target role
+    if (action === 'create' && targetUser?.role) {
+       const targetRoleLevel = roleHierarchy[targetUser.role];
+       return userRoleLevel > targetRoleLevel; // Can create roles strictly below
+    }
+
+    // For 'edit' and 'delete' actions on a specific user
+    if ((action === 'edit' || action === 'delete') && targetUser) {
+       // Prevent users from managing themselves
+       if (state.user.id === targetUser.id) return false;
+
+       const targetRoleLevel = roleHierarchy[targetUser.role];
+
+       // Check role hierarchy: Can manage roles strictly below
+       if (userRoleLevel > targetRoleLevel) {
+          return true;
+       }
+
+       // Check if target user is a subordinate (direct report)
+       const isDirectSubordinate = 
+          (state.user.role === 'manager' || state.user.role === 'admin') && targetUser.managerId && targetUser.managerId === state.user.id;
+       
+       const isDirectTeamLeaderSubordinate = 
+          state.user.role === 'tl' && targetUser.tlId && targetUser.tlId === state.user.id;
+
+       return isDirectSubordinate || isDirectTeamLeaderSubordinate;
+    }
+
+    // Default to false for other cases or if targetUser is missing for edit/delete
+    return false;
   };
 
   return (
     <AuthContext.Provider
-      value={{ state, login, logout, updateUser, canManageRole }}
+      value={{ state, login, logout, updateUser, canPerformUserAction }}
     >
       {children}
     </AuthContext.Provider>

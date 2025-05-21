@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserRole, User } from "@/lib/types";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, AuthContextProps } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -30,24 +30,35 @@ const UserForm: React.FC<UserFormProps> = ({
   availableManagers,
   availableTeamLeaders,
 }) => {
-  const { state, canManageRole } = useAuth();
+  const { state, canManageRole, canPerformUserAction } = useAuth();
   const { toast } = useToast();
 
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
   const [email, setEmail] = useState(user?.email || "");
   const [role, setRole] = useState<UserRole>(user?.role || "user");
-  const [managerId, setManagerId] = useState(user?.managerId || "");
-  const [tlId, setTlId] = useState(user?.tlId || "");
+  const [managerId, setManagerId] = useState(user?.managerId ? user.managerId : "none");
+  const [tlId, setTlId] = useState(user?.tlId ? user.tlId : "none");
   const [phoneNum, setPhoneNum] = useState(user?.phoneNum || "");
   const [department, setDepartment] = useState(user?.department || "");
   const [position, setPosition] = useState(user?.position || "");
   const [password, setPassword] = useState("");
 
   // Only allow selecting roles the current user can manage
-  const availableRoles = ["user", "tl", "manager", "admin", "master"].filter(
-    (r) => canManageRole(r as UserRole)
-  ) as UserRole[];
+  const availableRoles = ["user", "tl", "manager", "admin", "master"] as UserRole[];
+
+  // Filter roles based on the action (create or edit) and the target user's role if editing
+  const filterableRoles = availableRoles.filter(r => {
+     // For adding a user, check if the current user can create this role
+     if (!user) {
+        return canPerformUserAction('create', { role: r, id: '' }); // Pass a dummy user object with the role
+     } else {
+       // For editing a user, check if the current user can manage the target user's current role 
+       // or can assign the new role. A simplified check here: Can the user edit someone of this potential new role?
+       // A more robust check might involve checking permission to *change* from oldRole to newRole
+       return canPerformUserAction('edit', { ...user, role: r });
+     }
+  });
 
   // Update local state when user data changes (for edit form)
   useEffect(() => {
@@ -56,8 +67,8 @@ const UserForm: React.FC<UserFormProps> = ({
       setLastName(user.lastName || "");
       setEmail(user.email || "");
       setRole(user.role);
-      setManagerId(user.managerId || "");
-      setTlId(user.tlId || "");
+      setManagerId(user.managerId ? user.managerId : "none");
+      setTlId(user.tlId ? user.tlId : "none");
       setPhoneNum(user.phoneNum || "");
       setDepartment(user.department || "");
       setPosition(user.position || "");
@@ -170,7 +181,7 @@ const UserForm: React.FC<UserFormProps> = ({
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent className="bg-black/90 border-white/10">
-                  {availableRoles.map((r) => (
+                  {filterableRoles.map((r) => (
                     <SelectItem key={r} value={r}>
                       {r.charAt(0).toUpperCase() + r.slice(1)}
                     </SelectItem>
@@ -226,17 +237,6 @@ const UserForm: React.FC<UserFormProps> = ({
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="phoneNum">Phone Number</Label>
-              <Input
-                id="phoneNum"
-                value={phoneNum}
-                onChange={(e) => setPhoneNum(e.target.value)}
-                placeholder="123-456-7890"
-                className="bg-black/30 border-white/10 focus:border-primary/50"
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="department">Department</Label>
               <Input
                 id="department"
@@ -269,6 +269,20 @@ const UserForm: React.FC<UserFormProps> = ({
                    onChange={(e) => setPassword(e.target.value)}
                    placeholder="Password"
                    required
+                   className="bg-black/30 border-white/10 focus:border-primary/50"
+                 />
+               </div>
+            )}
+
+            {/* Show phone number input only when adding a new user */}
+            {!user && (
+               <div className="space-y-2">
+                 <Label htmlFor="phoneNum">Phone Number</Label>
+                 <Input
+                   id="phoneNum"
+                   value={phoneNum}
+                   onChange={(e) => setPhoneNum(e.target.value)}
+                   placeholder="123-456-7890"
                    className="bg-black/30 border-white/10 focus:border-primary/50"
                  />
                </div>
