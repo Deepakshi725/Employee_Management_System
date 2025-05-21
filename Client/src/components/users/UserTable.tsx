@@ -152,14 +152,13 @@ const UserTable: React.FC<UserTableProps> = ({ users, filteredRole, onUserDelete
               <TableHead>Position</TableHead>
               <TableHead>Manager/TL</TableHead>
               <TableHead>Joined</TableHead>
-              <TableHead>Phone Number</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {displayedUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-8">
                   No users found
                 </TableCell>
               </TableRow>
@@ -195,7 +194,6 @@ const UserTable: React.FC<UserTableProps> = ({ users, filteredRole, onUserDelete
                       ? new Date(user.createdAt).toLocaleDateString()
                       : "-"}
                   </TableCell>
-                  <TableCell>{user.phoneNum || '-'}</TableCell>
                   <TableCell className="text-right">
                     {state.user?.id !== user.id &&
                       state.user?.role && (
