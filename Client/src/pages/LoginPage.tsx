@@ -36,11 +36,6 @@ const LoginPage: React.FC = () => {
       <LoginForm />
 
       <div className="mt-8 text-center text-sm text-muted-foreground">
-        <p className="mb-2">
-          Demo access: 
-        </p>
-        <p>Email: master@example.com (or admin/manager/tl/user@example.com)</p>
-        <p>Password: password</p>
       </div>
     </div>
   );
