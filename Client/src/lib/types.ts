@@ -21,15 +21,6 @@ export interface AuthState {
   error: string | null;
 }
 
-export interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  read: boolean;
-  createdAt: Date;
-  type: "info" | "warning" | "success" | "error";
-}
-
 export interface DashboardStat {
   title: string;
   value: number;

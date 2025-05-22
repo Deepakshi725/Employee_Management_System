@@ -146,33 +146,6 @@ const RoleSpecificDashboard: React.FC<RoleSpecificDashboardProps> = ({ role }) =
                   )}
               </CardContent>
             </Card>
-
-            <Card className="card-gradient">
-              <CardHeader>
-                <CardTitle>Recent Activities</CardTitle>
-              </CardHeader>
-              <CardContent>
-                 {/* This content still uses mock data. Needs backend integration. */}
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center justify-between">
-                    <span>John Doe promoted to Manager</span>
-                    <span className="text-xs text-muted-foreground">Today</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>New Admin account created</span>
-                    <span className="text-xs text-muted-foreground">Yesterday</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>5 new employees onboarded</span>
-                    <span className="text-xs text-muted-foreground">3 days ago</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>System update completed</span>
-                    <span className="text-xs text-muted-foreground">1 week ago</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
           </div>
         );
 
@@ -376,33 +349,6 @@ const RoleSpecificDashboard: React.FC<RoleSpecificDashboardProps> = ({ role }) =
                     <span className="font-bold">1</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-gradient">
-              <CardHeader>
-                <CardTitle>Recent Notifications</CardTitle>
-              </CardHeader>
-              <CardContent>
-                 {/* This content still uses mock data. Needs backend integration. */}
-                 <ul className="space-y-2 text-sm">
-                   <li className="flex items-center justify-between">
-                    <span>Performance review scheduled</span>
-                    <span className="text-xs text-muted-foreground">Today</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>New task assigned</span>
-                    <span className="text-xs text-muted-foreground">Yesterday</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>Team meeting reminder</span>
-                    <span className="text-xs text-muted-foreground">2 days ago</span>
-                  </li>
-                   <li className="flex items-center justify-between">
-                    <span>Holiday policy update</span>
-                    <span className="text-xs text-muted-foreground">1 week ago</span>
-                  </li>
-                 </ul>
               </CardContent>
             </Card>
           </div>

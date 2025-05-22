@@ -3,7 +3,6 @@ const router = express.Router();
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Users } from "./models/User.js";
-import { Notification } from "./models/Notification.js";
 import { auth } from "./middleware/auth.js";
 import mongoose from 'mongoose'; // Import mongoose for aggregation
 
@@ -315,52 +314,6 @@ router.post("/SignUp", async (req, res) => {
       res.json({ message: "User deleted successfully" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  // Get notifications for authenticated user
-  router.get("/notifications", auth, async (req, res) => {
-    try {
-      const notifications = await Notification.find({ user: req.user.id }).sort({ createdAt: -1 });
-      res.json({ notifications });
-    } catch (error) {
-      console.error("Fetch notifications error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  // Mark a notification as read
-  router.put("/notifications/:id/mark-read", auth, async (req, res) => {
-    try {
-      const notification = await Notification.findOneAndUpdate(
-        { _id: req.params.id, user: req.user.id },
-        { $set: { read: true } },
-        { new: true }
-      );
-
-      if (!notification) {
-        return res.status(404).json({ message: "Notification not found or does not belong to user" });
-      }
-
-      res.json({ message: "Notification marked as read", notification });
-    } catch (error) {
-      console.error("Mark notification as read error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  // Mark all notifications as read
-  router.put("/notifications/mark-all-read", auth, async (req, res) => {
-    try {
-      await Notification.updateMany(
-        { user: req.user.id, read: false },
-        { $set: { read: true } }
-      );
-
-      res.json({ message: "All notifications marked as read" });
-    } catch (error) {
-      console.error("Mark all notifications as read error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
