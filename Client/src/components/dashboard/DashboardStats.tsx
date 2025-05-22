@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Card,
@@ -28,17 +27,6 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stat.value}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {stat.change > 0 ? (
-                <span className="text-green-400">
-                  +{stat.change}% from last month
-                </span>
-              ) : (
-                <span className="text-red-400">
-                  {stat.change}% from last month
-                </span>
-              )}
-            </p>
           </CardContent>
         </Card>
       ))}
